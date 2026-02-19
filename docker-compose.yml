@@ -1,0 +1,15 @@
+services:
+  app:
+    build: .
+    ports:
+      - "6000:3000"
+    volumes:
+      - db_data:/app/prisma
+      - uploads:/app/public/uploads
+    env_file:
+      - .env.production
+    restart: unless-stopped
+
+volumes:
+  db_data:
+  uploads:
