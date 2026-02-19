@@ -2,7 +2,7 @@ services:
   app:
     build: .
     ports:
-      - "7000:3000"
+      - "7000:3001"
     volumes:
       - db_data:/app/prisma
       - uploads:/app/public/uploads
