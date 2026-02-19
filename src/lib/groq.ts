@@ -26,13 +26,22 @@ export interface QuizContent {
   openQuestions: OpenQuestionData[];
 }
 
-export async function generateQuizContent(text: string): Promise<QuizContent> {
+export interface QuizCounts {
+  flashcardCount: number;
+  mcqCount: number;
+  openQuestionCount: number;
+}
+
+export async function generateQuizContent(text: string, counts?: QuizCounts): Promise<QuizContent> {
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
     throw new Error("GROQ_API_KEY is not set");
   }
 
   const truncatedText = text.slice(0, MAX_TEXT_LENGTH);
+  const fc = counts?.flashcardCount ?? 10;
+  const mc = counts?.mcqCount ?? 10;
+  const oq = counts?.openQuestionCount ?? 5;
 
   const prompt = `You are a quiz generator. Based on the following lesson content, generate a quiz in JSON format with exactly this structure:
 
@@ -49,9 +58,9 @@ export async function generateQuizContent(text: string): Promise<QuizContent> {
 }
 
 Requirements:
-- Generate exactly 10 flashcards (key term and its definition/explanation)
-- Generate exactly 10 multiple choice questions (4 options each, correctOption must be "A", "B", "C", or "D")
-- Generate exactly 5 open-ended questions with detailed model answers
+- Generate exactly ${fc} flashcards (key term and its definition/explanation)
+- Generate exactly ${mc} multiple choice questions (4 options each, correctOption must be "A", "B", "C", or "D")
+- Generate exactly ${oq} open-ended questions with detailed model answers
 - All content must be based on the provided lesson material
 - Questions should test understanding, not just memorization
 - Return ONLY valid JSON, no other text

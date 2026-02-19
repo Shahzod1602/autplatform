@@ -40,11 +40,16 @@ export async function POST(req: NextRequest) {
     }
 
     const userId = (session.user as { id: string }).id;
-    const { title, fileName, fileUrl, fileSize } = await req.json();
+    const { title, fileName, fileUrl, fileSize, flashcardCount, mcqCount, openQuestionCount } = await req.json();
 
     if (!title || !fileName || !fileUrl) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
+
+    const clampCount = (val: unknown, def: number) => {
+      const n = typeof val === "number" ? val : def;
+      return Math.max(1, Math.min(30, Math.round(n)));
+    };
 
     const quiz = await prisma.quiz.create({
       data: {
@@ -54,6 +59,9 @@ export async function POST(req: NextRequest) {
         fileUrl,
         fileSize: fileSize || 0,
         status: "GENERATING",
+        flashcardCount: clampCount(flashcardCount, 10),
+        mcqCount: clampCount(mcqCount, 10),
+        openQuestionCount: clampCount(openQuestionCount, 5),
       },
     });
 

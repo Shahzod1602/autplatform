@@ -39,6 +39,9 @@ export default function QuizDashboardPage() {
   const [title, setTitle] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [flashcardCount, setFlashcardCount] = useState(10);
+  const [mcqCount, setMcqCount] = useState(10);
+  const [openQuestionCount, setOpenQuestionCount] = useState(5);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -105,6 +108,9 @@ export default function QuizDashboardPage() {
           fileName: uploadData.fileName,
           fileUrl: uploadData.fileUrl,
           fileSize: uploadData.fileSize,
+          flashcardCount,
+          mcqCount,
+          openQuestionCount,
         }),
       });
       const quizData = await quizRes.json();
@@ -226,6 +232,47 @@ export default function QuizDashboardPage() {
                 required
               />
               <p className="text-xs text-gray-400 mt-1">{t("acceptedFormats")}</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {t("flashcardCountLabel")}
+              </label>
+              <input
+                type="number"
+                min={1}
+                max={30}
+                value={flashcardCount}
+                onChange={(e) => setFlashcardCount(Math.max(1, Math.min(30, Number(e.target.value))))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {t("mcqCountLabel")}
+              </label>
+              <input
+                type="number"
+                min={1}
+                max={30}
+                value={mcqCount}
+                onChange={(e) => setMcqCount(Math.max(1, Math.min(30, Number(e.target.value))))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {t("openQuestionCountLabel")}
+              </label>
+              <input
+                type="number"
+                min={1}
+                max={30}
+                value={openQuestionCount}
+                onChange={(e) => setOpenQuestionCount(Math.max(1, Math.min(30, Number(e.target.value))))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+              />
             </div>
           </div>
           <button

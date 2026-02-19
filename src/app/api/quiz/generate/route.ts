@@ -48,7 +48,11 @@ export async function POST(req: NextRequest) {
     }
 
     // Generate quiz content using Groq
-    const content = await generateQuizContent(text);
+    const content = await generateQuizContent(text, {
+      flashcardCount: quiz.flashcardCount,
+      mcqCount: quiz.mcqCount,
+      openQuestionCount: quiz.openQuestionCount,
+    });
 
     // Save all questions to the database
     await prisma.$transaction([
