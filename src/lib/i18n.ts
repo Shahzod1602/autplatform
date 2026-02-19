@@ -1,0 +1,123 @@
+export const t = {
+  // Navbar
+  login: "Sign In",
+  register: "Sign Up",
+  home: "Dashboard",
+  courses: "Courses",
+  admin: "Admin",
+  logout: "Sign Out",
+
+  // Landing
+  heroTitle1: "AUT Learning Platform",
+  heroTitle2: "all course materials in one place!",
+  heroDesc: "Course materials, textbooks, and slides platform for AUT students.",
+  getStarted: "Get Started",
+  whyUs: "Why AUT Platform?",
+  feat1Title: "Course Materials",
+  feat1Desc: "Exam materials, textbooks, and slides all in one place",
+  feat2Title: "Easy to Use",
+  feat2Desc: "Enroll in courses and download materials easily",
+  feat3Title: "University Only",
+  feat3Desc: "Registration only with @aut-edu.uz email",
+  feat4Title: "Quick Access",
+  feat4Desc: "All course materials organized and accessible",
+  allRights: "All rights reserved.",
+
+  // Auth
+  loginTitle: "Sign In",
+  email: "Email",
+  password: "Password",
+  yourPassword: "Your password",
+  logging: "Signing in...",
+  noAccount: "Don't have an account?",
+  registerHere: "Sign up",
+  registerTitle: "Create Account",
+  name: "Name",
+  yourName: "Your name",
+  minChars: "At least 6 characters",
+  registering: "Creating account...",
+  hasAccount: "Already have an account?",
+  loginHere: "Sign in",
+  onlyAut: "Only @aut-edu.uz emails accepted",
+  emailHint: "student@aut-edu.uz",
+
+  // Email verification
+  verifyEmail: "Verify Email",
+  emailSent: "Verification link sent to your email",
+  emailVerified: "Email verified successfully",
+  checkEmail: "Check your email",
+  invalidEmail: "Invalid email address",
+
+  // Dashboard
+  hello: "Hello",
+  startToday: "Start your learning today",
+  myCourses: "My Courses",
+  browseCourses: "Browse Courses",
+  noEnrollments: "You haven't enrolled in any courses yet",
+
+  // Courses
+  viewCourse: "View",
+  enroll: "Enroll",
+  unenroll: "Unenroll",
+  enrolled: "Enrolled",
+  noCourses: "No courses available yet",
+  materials: "materials",
+  enrollments: "enrolled",
+
+  // Course Detail
+  examMaterials: "Exam Materials",
+  textbooks: "Textbooks",
+  slides: "Slides",
+  download: "Download",
+  noMaterials: "No materials yet",
+
+  // Admin
+  createCourse: "Create Course",
+  courseName: "Course Name",
+  courseDescription: "Course Description",
+  editCourse: "Edit Course",
+  manage: "Manage",
+  uploadFile: "Upload File",
+  uploading: "Uploading...",
+  materialTitle: "Material Title",
+  saving: "Saving...",
+  save: "Save",
+  cancel: "Cancel",
+  confirmDelete: "Are you sure you want to delete?",
+  backToAdmin: "Back to Admin",
+  goBack: "Go Back",
+
+  // Stats
+  coursesCount: "Courses",
+  usersLabel: "Users",
+
+  // Quiz
+  quiz: "Quiz",
+  quizDashboard: "Quiz Dashboard",
+  quizDashboardDesc: "Upload lesson files and generate AI-powered quizzes for practice",
+  generateQuiz: "Generate Quiz",
+  quizTitle: "Quiz Title",
+  quizTitlePlaceholder: "e.g. Chapter 5 Review",
+  uploadLesson: "Upload Lesson File",
+  acceptedFormats: "PDF, PPTX, DOCX (max 20MB)",
+  generating: "Generating...",
+  myQuizzes: "My Quizzes",
+  noQuizzes: "No quizzes yet. Upload a file to get started!",
+  flashcards: "Flashcards",
+  multipleChoice: "Multiple Choice",
+  openQuestions: "Open Questions",
+  showAnswer: "Show Answer",
+  hideAnswer: "Hide Answer",
+  correct: "Correct!",
+  incorrect: "Incorrect",
+  quizReady: "Ready",
+  quizGenerating: "Generating...",
+  quizFailed: "Failed",
+  quizPending: "Pending",
+  deleteQuiz: "Delete Quiz",
+  prev: "Prev",
+  next: "Next",
+  flipCard: "Click to flip",
+} as const;
+
+export type TranslationKey = keyof typeof t;

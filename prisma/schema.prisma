@@ -1,0 +1,121 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id                String   @id @default(cuid())
+  name              String
+  email             String   @unique
+  password          String
+  role              Role     @default(STUDENT)
+  emailVerified     Boolean  @default(false)
+  verifyToken       String?
+  verifyTokenExpiry DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  enrollments CourseEnrollment[]
+  quizzes     Quiz[]
+}
+
+model Course {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  icon        String?
+  color       String   @default("#3B82F6")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  materials   CourseMaterial[]
+  enrollments CourseEnrollment[]
+}
+
+model CourseMaterial {
+  id        String       @id @default(cuid())
+  courseId   String
+  title     String
+  type      MaterialType
+  fileUrl   String
+  fileName  String
+  fileSize  Int
+  createdAt DateTime     @default(now())
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+}
+
+model CourseEnrollment {
+  id         String   @id @default(cuid())
+  userId     String
+  courseId    String
+  enrolledAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+}
+
+enum MaterialType {
+  EXAM_MATERIAL
+  TEXTBOOK
+  SLIDE
+}
+
+model Quiz {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  fileName  String
+  fileUrl   String
+  fileSize  Int
+  status    String   @default("PENDING")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  flashcards    Flashcard[]
+  mcqs          MCQ[]
+  openQuestions OpenQuestion[]
+}
+
+model Flashcard {
+  id         String @id @default(cuid())
+  quizId     String
+  term       String
+  definition String
+  sortOrder  Int    @default(0)
+  quiz       Quiz   @relation(fields: [quizId], references: [id], onDelete: Cascade)
+}
+
+model MCQ {
+  id            String @id @default(cuid())
+  quizId        String
+  question      String
+  optionA       String
+  optionB       String
+  optionC       String
+  optionD       String
+  correctOption String
+  sortOrder     Int    @default(0)
+  quiz          Quiz   @relation(fields: [quizId], references: [id], onDelete: Cascade)
+}
+
+model OpenQuestion {
+  id          String @id @default(cuid())
+  quizId      String
+  question    String
+  modelAnswer String
+  sortOrder   Int    @default(0)
+  quiz        Quiz   @relation(fields: [quizId], references: [id], onDelete: Cascade)
+}
