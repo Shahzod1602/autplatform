@@ -17,6 +17,11 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Invalid token" }, { status: 400 });
     }
 
+    // Already verified — return success
+    if (user.emailVerified) {
+      return NextResponse.json({ message: "Email verified successfully!" });
+    }
+
     if (user.verifyTokenExpiry && user.verifyTokenExpiry < new Date()) {
       return NextResponse.json({ error: "Token has expired" }, { status: 400 });
     }
@@ -25,8 +30,6 @@ export async function GET(req: NextRequest) {
       where: { id: user.id },
       data: {
         emailVerified: true,
-        verifyToken: null,
-        verifyTokenExpiry: null,
       },
     });
 
