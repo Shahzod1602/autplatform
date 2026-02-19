@@ -40,15 +40,15 @@ function VerifyContent() {
       {status === "loading" && (
         <div className="py-8">
           <Loader2 className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Verifying email...</p>
+          <p className="text-gray-600 dark:text-gray-400">Verifying email...</p>
         </div>
       )}
 
       {status === "success" && (
         <div className="py-8">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-gray-900 mb-2">{message}</h2>
-          <p className="text-gray-500 mb-6">You can now sign in to your account.</p>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{message}</h2>
+          <p className="text-gray-500 dark:text-gray-400 mb-6">You can now sign in to your account.</p>
           <Link
             href="/login"
             className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition"
@@ -61,8 +61,8 @@ function VerifyContent() {
       {status === "error" && (
         <div className="py-8">
           <XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Error</h2>
-          <p className="text-gray-500 mb-6">{message}</p>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Error</h2>
+          <p className="text-gray-500 dark:text-gray-400 mb-6">{message}</p>
           <Link
             href="/register"
             className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition"
@@ -77,17 +77,17 @@ function VerifyContent() {
 
 export default function VerifyPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
-      <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md text-center">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-900 dark:to-slate-800 px-4">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-8 w-full max-w-md text-center">
         <Link href="/" className="inline-flex items-center gap-2 mb-6">
           <BookOpen className="w-8 h-8 text-blue-600" />
-          <span className="text-2xl font-bold text-gray-900">AUT Platform</span>
+          <span className="text-2xl font-bold text-gray-900 dark:text-white">AUT Platform</span>
         </Link>
         <Suspense
           fallback={
             <div className="py-8">
               <Loader2 className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
-              <p className="text-gray-600">Loading...</p>
+              <p className="text-gray-600 dark:text-gray-400">Loading...</p>
             </div>
           }
         >
