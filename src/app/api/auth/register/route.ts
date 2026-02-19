@@ -55,11 +55,10 @@ export async function POST(req: Request) {
       },
     });
 
-    try {
-      await sendVerificationEmail(email, verifyToken);
-    } catch (emailError) {
+    // Send email in background (don't block registration response)
+    sendVerificationEmail(email, verifyToken).catch((emailError) => {
       console.error("Email sending failed:", emailError);
-    }
+    });
 
     return NextResponse.json(
       { message: "Registration successful! Please verify your email." },
