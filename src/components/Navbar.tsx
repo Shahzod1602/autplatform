@@ -3,46 +3,79 @@
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { useState } from "react";
-import { Menu, X, BookOpen, LogOut, User, GraduationCap, Shield, BrainCircuit } from "lucide-react";
+import {
+  Menu,
+  X,
+  BookOpen,
+  LogOut,
+  User,
+  GraduationCap,
+  Shield,
+  BrainCircuit,
+  Trophy,
+  BarChart3,
+  Sun,
+  Moon,
+} from "lucide-react";
 import { useT } from "@/lib/useLocale";
+import { useThemeStore } from "@/lib/useThemeStore";
 
 export default function Navbar() {
   const { data: session } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
   const t = useT();
+  const { theme, setTheme } = useThemeStore();
+
+  const toggleTheme = () => {
+    if (theme === "dark") setTheme("light");
+    else setTheme("dark");
+  };
 
   return (
-    <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
+    <nav className="bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link href="/" className="flex items-center gap-2">
               <BookOpen className="w-8 h-8 text-blue-600" />
-              <span className="text-xl font-bold text-gray-900">AUT Platform</span>
+              <span className="text-xl font-bold text-gray-900 dark:text-white">AUT Platform</span>
             </Link>
           </div>
 
           {session ? (
             <>
               <div className="hidden md:flex items-center gap-6">
-                <Link href="/dashboard" className="text-gray-600 hover:text-blue-600 transition-colors">
+                <Link href="/dashboard" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
                   {t("home")}
                 </Link>
-                <Link href="/courses" className="text-gray-600 hover:text-blue-600 transition-colors">
+                <Link href="/courses" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
                   {t("courses")}
                 </Link>
-                <Link href="/quiz" className="text-gray-600 hover:text-blue-600 transition-colors">
+                <Link href="/quiz" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
                   {t("quiz")}
                 </Link>
+                <Link href="/leaderboard" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
+                  {t("leaderboard")}
+                </Link>
+                <Link href="/analytics" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
+                  {t("analytics")}
+                </Link>
                 {(session.user as { role?: string })?.role === "ADMIN" && (
-                  <Link href="/admin" className="text-gray-600 hover:text-blue-600 transition-colors">
+                  <Link href="/admin" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
                     {t("admin")}
                   </Link>
                 )}
-                <div className="flex items-center gap-3 ml-2 pl-4 border-l border-gray-200">
+                <div className="flex items-center gap-3 ml-2 pl-4 border-l border-gray-200 dark:border-slate-600">
+                  <button
+                    onClick={toggleTheme}
+                    className="text-gray-400 hover:text-yellow-500 transition-colors"
+                    title={theme === "dark" ? t("lightMode") : t("darkMode")}
+                  >
+                    {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                  </button>
                   <div className="flex items-center gap-2">
                     <User className="w-5 h-5 text-gray-400" />
-                    <span className="text-sm text-gray-700">{session.user?.name}</span>
+                    <span className="text-sm text-gray-700 dark:text-gray-300">{session.user?.name}</span>
                   </div>
                   <button
                     onClick={() => signOut({ callbackUrl: "/" })}
@@ -55,14 +88,26 @@ export default function Navbar() {
               </div>
 
               <div className="md:hidden flex items-center gap-2">
+                <button
+                  onClick={toggleTheme}
+                  className="text-gray-400 hover:text-yellow-500 transition-colors p-1"
+                >
+                  {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                </button>
                 <button onClick={() => setMenuOpen(!menuOpen)}>
-                  {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                  {menuOpen ? <X className="w-6 h-6 dark:text-white" /> : <Menu className="w-6 h-6 dark:text-white" />}
                 </button>
               </div>
             </>
           ) : (
             <div className="flex items-center gap-3">
-              <Link href="/login" className="text-gray-600 hover:text-blue-600 transition-colors">
+              <button
+                onClick={toggleTheme}
+                className="text-gray-400 hover:text-yellow-500 transition-colors p-1"
+              >
+                {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              </button>
+              <Link href="/login" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
                 {t("login")}
               </Link>
               <Link
@@ -77,19 +122,25 @@ export default function Navbar() {
       </div>
 
       {menuOpen && session && (
-        <div className="md:hidden border-t border-gray-200 bg-white">
+        <div className="md:hidden border-t border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800">
           <div className="px-4 py-3 space-y-2">
-            <Link href="/dashboard" className="block py-2 text-gray-600" onClick={() => setMenuOpen(false)}>
+            <Link href="/dashboard" className="block py-2 text-gray-600 dark:text-gray-300" onClick={() => setMenuOpen(false)}>
               <GraduationCap className="w-4 h-4 inline mr-2" />{t("home")}
             </Link>
-            <Link href="/courses" className="block py-2 text-gray-600" onClick={() => setMenuOpen(false)}>
+            <Link href="/courses" className="block py-2 text-gray-600 dark:text-gray-300" onClick={() => setMenuOpen(false)}>
               <BookOpen className="w-4 h-4 inline mr-2" />{t("courses")}
             </Link>
-            <Link href="/quiz" className="block py-2 text-gray-600" onClick={() => setMenuOpen(false)}>
+            <Link href="/quiz" className="block py-2 text-gray-600 dark:text-gray-300" onClick={() => setMenuOpen(false)}>
               <BrainCircuit className="w-4 h-4 inline mr-2" />{t("quiz")}
             </Link>
+            <Link href="/leaderboard" className="block py-2 text-gray-600 dark:text-gray-300" onClick={() => setMenuOpen(false)}>
+              <Trophy className="w-4 h-4 inline mr-2" />{t("leaderboard")}
+            </Link>
+            <Link href="/analytics" className="block py-2 text-gray-600 dark:text-gray-300" onClick={() => setMenuOpen(false)}>
+              <BarChart3 className="w-4 h-4 inline mr-2" />{t("analytics")}
+            </Link>
             {(session.user as { role?: string })?.role === "ADMIN" && (
-              <Link href="/admin" className="block py-2 text-gray-600" onClick={() => setMenuOpen(false)}>
+              <Link href="/admin" className="block py-2 text-gray-600 dark:text-gray-300" onClick={() => setMenuOpen(false)}>
                 <Shield className="w-4 h-4 inline mr-2" />{t("admin")}
               </Link>
             )}

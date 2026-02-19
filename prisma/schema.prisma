@@ -19,8 +19,9 @@ model User {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
-  enrollments CourseEnrollment[]
-  quizzes     Quiz[]
+  enrollments  CourseEnrollment[]
+  quizzes      Quiz[]
+  quizAttempts QuizAttempt[]
 }
 
 model Course {
@@ -86,10 +87,13 @@ model Quiz {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
+  shareToken    String?        @unique
+
   user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   flashcards    Flashcard[]
   mcqs          MCQ[]
   openQuestions OpenQuestion[]
+  attempts      QuizAttempt[]
 }
 
 model Flashcard {
@@ -112,6 +116,19 @@ model MCQ {
   correctOption String
   sortOrder     Int    @default(0)
   quiz          Quiz   @relation(fields: [quizId], references: [id], onDelete: Cascade)
+}
+
+model QuizAttempt {
+  id             String   @id @default(cuid())
+  quizId         String
+  userId         String
+  score          Int
+  totalQuestions Int
+  answers        String
+  createdAt      DateTime @default(now())
+
+  quiz Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model OpenQuestion {

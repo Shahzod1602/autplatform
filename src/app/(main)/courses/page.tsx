@@ -35,7 +35,6 @@ export default function CoursesPage() {
 
   useEffect(() => {
     if (session) {
-      // Check enrollment for each course
       const userId = (session.user as { id: string }).id;
       courses.forEach(async (course) => {
         try {
@@ -87,8 +86,8 @@ export default function CoursesPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">{t("courses")}</h1>
-        <p className="text-gray-500 mt-1">{t("browseCourses")}</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t("courses")}</h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-1">{t("browseCourses")}</p>
       </div>
 
       {courses.length > 0 ? (
@@ -96,7 +95,7 @@ export default function CoursesPage() {
           {courses.map((course) => (
             <div
               key={course.id}
-              className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition"
+              className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden hover:shadow-md transition"
             >
               <div
                 className="h-2"
@@ -110,12 +109,12 @@ export default function CoursesPage() {
                   >
                     <BookOpen className="w-5 h-5" style={{ color: course.color }} />
                   </div>
-                  <h3 className="font-semibold text-gray-900 text-lg">{course.name}</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-white text-lg">{course.name}</h3>
                 </div>
                 {course.description && (
-                  <p className="text-sm text-gray-500 mb-4 line-clamp-2">{course.description}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 line-clamp-2">{course.description}</p>
                 )}
-                <div className="flex items-center gap-4 text-sm text-gray-400 mb-4">
+                <div className="flex items-center gap-4 text-sm text-gray-400 dark:text-gray-500 mb-4">
                   <span className="flex items-center gap-1">
                     <FileText className="w-4 h-4" /> {course._count.materials} {t("materials")}
                   </span>
@@ -126,7 +125,7 @@ export default function CoursesPage() {
                 <div className="flex gap-2">
                   <Link
                     href={`/courses/${course.id}`}
-                    className="flex-1 text-center py-2 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 transition text-sm font-medium"
+                    className="flex-1 text-center py-2 border border-gray-200 dark:border-slate-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 transition text-sm font-medium"
                   >
                     {t("viewCourse")}
                   </Link>
@@ -139,7 +138,7 @@ export default function CoursesPage() {
                       {enrollingId === course.id ? "..." : t("enroll")}
                     </button>
                   ) : enrolledIds.has(course.id) ? (
-                    <span className="flex-1 py-2 text-center text-green-600 bg-green-50 rounded-lg text-sm font-medium flex items-center justify-center gap-1">
+                    <span className="flex-1 py-2 text-center text-green-600 bg-green-50 dark:bg-green-900/20 rounded-lg text-sm font-medium flex items-center justify-center gap-1">
                       <CheckCircle className="w-4 h-4" /> {t("enrolled")}
                     </span>
                   ) : null}
@@ -150,8 +149,8 @@ export default function CoursesPage() {
         </div>
       ) : (
         <div className="text-center py-20">
-          <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <p className="text-gray-400">{t("noCourses")}</p>
+          <BookOpen className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+          <p className="text-gray-400 dark:text-gray-500">{t("noCourses")}</p>
         </div>
       )}
     </div>

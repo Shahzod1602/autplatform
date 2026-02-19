@@ -94,3 +94,52 @@ ${truncatedText}`;
 
   return parsed;
 }
+
+interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+export async function chatWithMaterial(
+  materialText: string,
+  message: string,
+  history: ChatMessage[]
+): Promise<string> {
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) {
+    throw new Error("GROQ_API_KEY is not set");
+  }
+
+  const truncatedText = materialText.slice(0, MAX_TEXT_LENGTH);
+
+  const messages = [
+    {
+      role: "system",
+      content: `You are a helpful learning assistant. The student is studying the following material. Answer questions based on this content. Be concise and helpful.\n\nMaterial:\n${truncatedText}`,
+    },
+    ...history.map((h) => ({ role: h.role, content: h.content })),
+    { role: "user", content: message },
+  ];
+
+  const response = await fetch(GROQ_API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: "llama-3.3-70b-versatile",
+      messages,
+      temperature: 0.3,
+      max_tokens: 1024,
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Groq API error: ${response.status} ${error}`);
+  }
+
+  const data = await response.json();
+  return data.choices[0].message.content;
+}

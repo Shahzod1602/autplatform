@@ -31,9 +31,9 @@ export default function OpenQuestionViewer({ questions }: { questions: OpenQuest
   return (
     <div className="max-w-2xl mx-auto space-y-4">
       {questions.map((q, i) => (
-        <div key={q.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <p className="text-xs text-gray-400 mb-2">Question {i + 1}</p>
-          <p className="text-gray-900 font-medium mb-4">{q.question}</p>
+        <div key={q.id} className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-6">
+          <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">Question {i + 1}</p>
+          <p className="text-gray-900 dark:text-white font-medium mb-4">{q.question}</p>
 
           <button
             onClick={() => toggle(q.id)}
@@ -51,8 +51,8 @@ export default function OpenQuestionViewer({ questions }: { questions: OpenQuest
           </button>
 
           {revealed.has(q.id) && (
-            <div className="mt-3 p-4 bg-blue-50 rounded-lg border border-blue-100">
-              <p className="text-sm text-gray-800 leading-relaxed whitespace-pre-wrap">{q.modelAnswer}</p>
+            <div className="mt-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800">
+              <p className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap">{q.modelAnswer}</p>
             </div>
           )}
         </div>

@@ -121,6 +121,64 @@ export const t = {
   prev: "Prev",
   next: "Next",
   flipCard: "Click to flip",
+
+  // Score Tracking
+  finishQuiz: "Finish Quiz",
+  scoreTitle: "Quiz Results",
+  scoreLabel: "Score",
+  questionsCorrect: "correct",
+  saveScore: "Save Score",
+  scoreSaved: "Score saved!",
+  wrongAnswers: "Wrong Answers",
+  retryWrong: "Retry Wrong Answers",
+  backToResults: "Back to Results",
+
+  // Share
+  share: "Share",
+  shareQuiz: "Share Quiz",
+  generateLink: "Generate Link",
+  copyLink: "Copy Link",
+  linkCopied: "Link copied!",
+  sharedQuiz: "Shared Quiz",
+
+  // Dark Mode
+  darkMode: "Dark Mode",
+  lightMode: "Light Mode",
+  systemMode: "System",
+
+  // PDF Export
+  exportPDF: "Export PDF",
+  pdfTitle: "Quiz Export",
+
+  // Leaderboard
+  leaderboard: "Leaderboard",
+  rank: "Rank",
+  player: "Player",
+  quizzesPlayed: "Quizzes",
+  avgScore: "Avg Score",
+  bestScore: "Best Score",
+  noLeaderboard: "No scores yet. Be the first!",
+
+  // AI Chat
+  aiChat: "AI Chat",
+  chatPlaceholder: "Ask about this material...",
+  chatThinking: "Thinking...",
+  chatError: "Error getting response",
+  chatWelcome: "Ask me anything about this quiz material!",
+
+  // Analytics
+  analytics: "Analytics",
+  totalQuizzes: "Total Quizzes",
+  totalAttempts: "Total Attempts",
+  averageScore: "Average Score",
+  bestScoreLabel: "Best Score",
+  quizzesThisWeek: "This Week",
+  scoreOverTime: "Score Over Time",
+  perQuizScore: "Score by Quiz",
+  mostMissed: "Most Missed Questions",
+  noAnalytics: "No data yet. Take some quizzes!",
+  question: "Question",
+  missCount: "Times Missed",
 } as const;
 
 export type TranslationKey = keyof typeof t;

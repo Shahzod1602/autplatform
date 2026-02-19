@@ -10,11 +10,16 @@ import {
   ListChecks,
   MessageSquare,
   Trash2,
+  Share2,
+  FileDown,
+  Copy,
+  Check,
 } from "lucide-react";
 import { useT } from "@/lib/useLocale";
 import FlashcardViewer from "@/components/quiz/FlashcardViewer";
 import MCQViewer from "@/components/quiz/MCQViewer";
 import OpenQuestionViewer from "@/components/quiz/OpenQuestionViewer";
+import ChatWidget from "@/components/quiz/ChatWidget";
 
 interface Flashcard {
   id: string;
@@ -44,6 +49,7 @@ interface QuizDetail {
   fileName: string;
   status: string;
   createdAt: string;
+  shareToken?: string;
   flashcards: Flashcard[];
   mcqs: MCQ[];
   openQuestions: OpenQuestion[];
@@ -59,6 +65,8 @@ export default function QuizViewerPage() {
   const [quiz, setQuiz] = useState<QuizDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<TabType>("flashcards");
+  const [shareLoading, setShareLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (status === "unauthenticated") router.push("/login");
@@ -85,6 +93,33 @@ export default function QuizViewerPage() {
     router.push("/quiz");
   };
 
+  const handleShare = async () => {
+    if (!quiz) return;
+    if (quiz.shareToken) {
+      await copyShareLink(quiz.shareToken);
+      return;
+    }
+    setShareLoading(true);
+    try {
+      const res = await fetch(`/api/quiz/${id}`, { method: "PATCH" });
+      const data = await res.json();
+      if (data.shareToken) {
+        setQuiz((prev) => prev ? { ...prev, shareToken: data.shareToken } : prev);
+        await copyShareLink(data.shareToken);
+      }
+    } catch {
+      // ignore
+    }
+    setShareLoading(false);
+  };
+
+  const copyShareLink = async (token: string) => {
+    const url = `${window.location.origin}/quiz/share/${token}`;
+    await navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   if (status === "loading" || loading || !quiz) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -108,22 +143,49 @@ export default function QuizViewerPage() {
         </Link>
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">{quiz.title}</h1>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{quiz.title}</h1>
             <p className="text-sm text-gray-400 mt-1">
               {quiz.fileName} &middot; {new Date(quiz.createdAt).toLocaleDateString()}
             </p>
           </div>
-          <button
-            onClick={handleDelete}
-            className="flex items-center gap-2 px-3 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition text-sm"
-          >
-            <Trash2 className="w-4 h-4" /> {t("deleteQuiz")}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleShare}
+              disabled={shareLoading}
+              className="flex items-center gap-2 px-3 py-2 border border-gray-200 dark:border-slate-600 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition text-sm"
+            >
+              {copied ? (
+                <>
+                  <Check className="w-4 h-4 text-green-500" /> {t("linkCopied")}
+                </>
+              ) : quiz.shareToken ? (
+                <>
+                  <Copy className="w-4 h-4" /> {t("copyLink")}
+                </>
+              ) : (
+                <>
+                  <Share2 className="w-4 h-4" /> {t("share")}
+                </>
+              )}
+            </button>
+            <a
+              href={`/api/quiz/${quiz.id}/pdf`}
+              className="flex items-center gap-2 px-3 py-2 border border-gray-200 dark:border-slate-600 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700 transition text-sm"
+            >
+              <FileDown className="w-4 h-4" /> {t("exportPDF")}
+            </a>
+            <button
+              onClick={handleDelete}
+              className="flex items-center gap-2 px-3 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition text-sm"
+            >
+              <Trash2 className="w-4 h-4" /> {t("deleteQuiz")}
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-200 mb-6">
+      <div className="border-b border-gray-200 dark:border-slate-700 mb-6">
         <div className="flex gap-6">
           {tabs.map((tc) => (
             <button
@@ -132,12 +194,12 @@ export default function QuizViewerPage() {
               className={`flex items-center gap-2 pb-3 border-b-2 transition text-sm font-medium ${
                 tab === tc.key
                   ? "border-blue-600 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
               }`}
             >
               <tc.icon className="w-4 h-4" />
               {tc.label}
-              <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-xs">
+              <span className="bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-full text-xs">
                 {tc.count}
               </span>
             </button>
@@ -147,8 +209,11 @@ export default function QuizViewerPage() {
 
       {/* Content */}
       {tab === "flashcards" && <FlashcardViewer flashcards={quiz.flashcards} />}
-      {tab === "mcq" && <MCQViewer mcqs={quiz.mcqs} />}
+      {tab === "mcq" && <MCQViewer mcqs={quiz.mcqs} quizId={quiz.id} />}
       {tab === "open" && <OpenQuestionViewer questions={quiz.openQuestions} />}
+
+      {/* AI Chat Widget */}
+      <ChatWidget quizId={quiz.id} />
     </div>
   );
 }
