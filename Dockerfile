@@ -40,6 +40,9 @@ COPY --from=builder /app/node_modules/file-uri-to-path ./node_modules/file-uri-t
 # Copy nodemailer (not bundled by Next.js standalone)
 COPY --from=builder /app/node_modules/nodemailer ./node_modules/nodemailer
 
+# Copy @napi-rs/canvas (provides DOMMatrix polyfill for pdf-parse)
+COPY --from=builder /app/node_modules/@napi-rs ./node_modules/@napi-rs
+
 # Ensure upload directory exists
 RUN mkdir -p /app/public/uploads
 
