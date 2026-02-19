@@ -36,8 +36,6 @@ COPY --from=builder /app/src/generated ./src/generated
 COPY --from=builder /app/node_modules/better-sqlite3 ./node_modules/better-sqlite3
 COPY --from=builder /app/node_modules/bindings ./node_modules/bindings
 COPY --from=builder /app/node_modules/file-uri-to-path ./node_modules/file-uri-to-path
-COPY --from=builder /app/node_modules/prebuild-install ./node_modules/prebuild-install
-COPY --from=builder /app/node_modules/node-addon-api ./node_modules/node-addon-api
 
 # Ensure upload directory exists
 RUN mkdir -p /app/public/uploads
