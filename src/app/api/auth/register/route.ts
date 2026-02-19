@@ -57,8 +57,8 @@ export async function POST(req: Request) {
 
     try {
       await sendVerificationEmail(email, verifyToken);
-    } catch {
-      // Email sending may fail in dev - user was still created
+    } catch (emailError) {
+      console.error("Email sending failed:", emailError);
     }
 
     return NextResponse.json(
