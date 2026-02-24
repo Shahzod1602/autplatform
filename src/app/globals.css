@@ -2,6 +2,9 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Safelist: dynamic Tailwind classes used in JS objects (not statically detectable) */
+@source inline("h-14 h-20 h-28 order-1 order-2 order-3 bg-gradient-to-b from-yellow-400 to-yellow-500 from-gray-300 to-gray-400 from-orange-400 to-orange-500 border-yellow-400 border-gray-300 border-orange-400 ring-yellow-400 ring-gray-300 ring-orange-400 text-yellow-700 text-orange-700 from-blue-500 to-cyan-500 from-purple-500 to-pink-500 from-green-500 to-emerald-500 from-orange-500 to-red-500 hover:-translate-y-1");
+
 @theme inline {
   --color-background: #ffffff;
   --color-foreground: #171717;
