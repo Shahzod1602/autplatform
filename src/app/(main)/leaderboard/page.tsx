@@ -16,41 +16,46 @@ interface LeaderboardEntry {
   isCurrentUser: boolean;
 }
 
-const podiumConfig = [
-  {
-    rank: 1,
-    medal: "🥇",
-    label: "1st",
-    bg: "bg-gradient-to-b from-yellow-400 to-yellow-500",
-    border: "border-yellow-400",
-    height: "h-28",
-    textColor: "text-yellow-700 dark:text-yellow-300",
-    ringColor: "ring-yellow-400",
-    order: "order-2",
-  },
-  {
-    rank: 2,
-    medal: "🥈",
-    label: "2nd",
-    bg: "bg-gradient-to-b from-gray-300 to-gray-400",
-    border: "border-gray-300",
-    height: "h-20",
-    textColor: "text-gray-600 dark:text-gray-300",
-    ringColor: "ring-gray-300",
-    order: "order-1",
-  },
-  {
-    rank: 3,
-    medal: "🥉",
-    label: "3rd",
-    bg: "bg-gradient-to-b from-orange-400 to-orange-500",
-    border: "border-orange-400",
-    height: "h-14",
-    textColor: "text-orange-700 dark:text-orange-300",
-    ringColor: "ring-orange-400",
-    order: "order-3",
-  },
-];
+function PodiumBlock({ entry, rank }: { entry: LeaderboardEntry; rank: 1 | 2 | 3 }) {
+  const medal = rank === 1 ? "🥇" : rank === 2 ? "🥈" : "🥉";
+  const label = rank === 1 ? "1st" : rank === 2 ? "2nd" : "3rd";
+
+  const ringClass =
+    rank === 1 ? "ring-yellow-400" : rank === 2 ? "ring-gray-300" : "ring-orange-400";
+  const blockBg =
+    rank === 1
+      ? "bg-gradient-to-b from-yellow-400 to-yellow-500 border-t-2 border-yellow-400"
+      : rank === 2
+      ? "bg-gradient-to-b from-gray-300 to-gray-400 border-t-2 border-gray-300"
+      : "bg-gradient-to-b from-orange-400 to-orange-500 border-t-2 border-orange-400";
+  const blockHeight = rank === 1 ? "h-28" : rank === 2 ? "h-20" : "h-14";
+  const orderClass = rank === 1 ? "order-2" : rank === 2 ? "order-1" : "order-3";
+
+  return (
+    <div className={`flex flex-col items-center ${orderClass}`}>
+      <div className="flex flex-col items-center mb-2">
+        <div
+          className={`w-14 h-14 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center text-2xl font-bold ring-4 ${ringClass} shadow-lg mb-1 ${entry.isCurrentUser ? "ring-offset-2" : ""}`}
+        >
+          {entry.name.charAt(0).toUpperCase()}
+        </div>
+        <p
+          className={`text-sm font-semibold text-center max-w-[90px] truncate ${
+            entry.isCurrentUser ? "text-blue-600 dark:text-blue-400" : "text-gray-800 dark:text-white"
+          }`}
+        >
+          {entry.name}
+          {entry.isCurrentUser && <span className="block text-xs text-blue-400">(you)</span>}
+        </p>
+        <p className="text-xs text-gray-500 dark:text-gray-400">{entry.avgScore}% avg</p>
+      </div>
+      <div className={`w-24 ${blockHeight} ${blockBg} rounded-t-xl flex flex-col items-center justify-center shadow-md`}>
+        <span className="text-2xl">{medal}</span>
+        <span className="text-xs font-bold text-white/90">{label}</span>
+      </div>
+    </div>
+  );
+}
 
 export default function LeaderboardPage() {
   const { data: session, status } = useSession();
@@ -104,44 +109,14 @@ export default function LeaderboardPage() {
 
       {data.length > 0 ? (
         <>
-          {/* Podium top 3 */}
           {top3.length >= 1 && (
             <div className="flex items-end justify-center gap-4 mb-10">
-              {podiumConfig.slice(0, top3.length).map((cfg) => {
-                const entry = top3[cfg.rank - 1];
-                if (!entry) return null;
-                return (
-                  <div key={cfg.rank} className={`flex flex-col items-center ${cfg.order}`}>
-                    {/* Avatar + name */}
-                    <div className="flex flex-col items-center mb-2">
-                      <div
-                        className={`w-14 h-14 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center text-2xl font-bold ring-4 ${cfg.ringColor} shadow-lg mb-1 ${entry.isCurrentUser ? "ring-offset-2" : ""}`}
-                      >
-                        {entry.name.charAt(0).toUpperCase()}
-                      </div>
-                      <p
-                        className={`text-sm font-semibold text-center max-w-[90px] truncate ${entry.isCurrentUser ? "text-blue-600 dark:text-blue-400" : "text-gray-800 dark:text-white"}`}
-                      >
-                        {entry.name}
-                        {entry.isCurrentUser && <span className="block text-xs text-blue-400">(you)</span>}
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{entry.avgScore}% avg</p>
-                    </div>
-
-                    {/* Podium block */}
-                    <div
-                      className={`w-24 ${cfg.height} ${cfg.bg} rounded-t-xl flex flex-col items-center justify-center shadow-md border-t-2 ${cfg.border}`}
-                    >
-                      <span className="text-2xl">{cfg.medal}</span>
-                      <span className="text-xs font-bold text-white/90">{cfg.label}</span>
-                    </div>
-                  </div>
-                );
-              })}
+              {top3[1] && <PodiumBlock entry={top3[1]} rank={2} />}
+              {top3[0] && <PodiumBlock entry={top3[0]} rank={1} />}
+              {top3[2] && <PodiumBlock entry={top3[2]} rank={3} />}
             </div>
           )}
 
-          {/* Rest of the table (rank 4+) */}
           {rest.length > 0 && (
             <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden">
               <table className="w-full">

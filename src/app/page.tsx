@@ -8,10 +8,10 @@ export default function Home() {
   const t = useT();
 
   const features = [
-    { icon: FileText, title: t("feat1Title"), desc: t("feat1Desc"), gradient: "from-blue-500 to-cyan-500" },
-    { icon: GraduationCap, title: t("feat2Title"), desc: t("feat2Desc"), gradient: "from-purple-500 to-pink-500" },
-    { icon: Shield, title: t("feat3Title"), desc: t("feat3Desc"), gradient: "from-green-500 to-emerald-500" },
-    { icon: BookOpen, title: t("feat4Title"), desc: t("feat4Desc"), gradient: "from-orange-500 to-red-500" },
+    { icon: FileText, title: t("feat1Title"), desc: t("feat1Desc") },
+    { icon: GraduationCap, title: t("feat2Title"), desc: t("feat2Desc") },
+    { icon: Shield, title: t("feat3Title"), desc: t("feat3Desc") },
+    { icon: BookOpen, title: t("feat4Title"), desc: t("feat4Desc") },
   ];
 
   return (
@@ -138,7 +138,17 @@ export default function Home() {
               key={i}
               className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 hover:shadow-md hover:-translate-y-1 transition-all duration-200"
             >
-              <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-4 shadow-md`}>
+              <div
+                className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 shadow-md ${
+                  i === 0
+                    ? "bg-gradient-to-br from-blue-500 to-cyan-500"
+                    : i === 1
+                    ? "bg-gradient-to-br from-purple-500 to-pink-500"
+                    : i === 2
+                    ? "bg-gradient-to-br from-green-500 to-emerald-500"
+                    : "bg-gradient-to-br from-orange-500 to-red-500"
+                }`}
+              >
                 <feature.icon className="w-6 h-6 text-white" />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{feature.title}</h3>
