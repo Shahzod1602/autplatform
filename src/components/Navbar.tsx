@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import {
   Menu,
   X,
@@ -25,6 +26,12 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const t = useT();
   const { theme, setTheme } = useThemeStore();
+  const pathname = usePathname();
+
+  const navLink = (href: string) =>
+    pathname === href || (href !== "/dashboard" && pathname.startsWith(href))
+      ? "text-blue-600 dark:text-blue-400 font-medium"
+      : "text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors";
 
   const toggleTheme = () => {
     if (theme === "dark") setTheme("light");
@@ -45,23 +52,23 @@ export default function Navbar() {
           {session ? (
             <>
               <div className="hidden md:flex items-center gap-6">
-                <Link href="/dashboard" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
+                <Link href="/dashboard" className={navLink("/dashboard")}>
                   {t("home")}
                 </Link>
-                <Link href="/courses" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
+                <Link href="/courses" className={navLink("/courses")}>
                   {t("courses")}
                 </Link>
-                <Link href="/quiz" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
+                <Link href="/quiz" className={navLink("/quiz")}>
                   {t("quiz")}
                 </Link>
-                <Link href="/leaderboard" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
+                <Link href="/leaderboard" className={navLink("/leaderboard")}>
                   {t("leaderboard")}
                 </Link>
-                <Link href="/analytics" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
+                <Link href="/analytics" className={navLink("/analytics")}>
                   {t("analytics")}
                 </Link>
                 {(session.user as { role?: string })?.role === "ADMIN" && (
-                  <Link href="/admin" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors">
+                  <Link href="/admin" className={navLink("/admin")}>
                     {t("admin")}
                   </Link>
                 )}
@@ -124,23 +131,23 @@ export default function Navbar() {
       {menuOpen && session && (
         <div className="md:hidden border-t border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800">
           <div className="px-4 py-3 space-y-2">
-            <Link href="/dashboard" className="block py-2 text-gray-600 dark:text-gray-300" onClick={() => setMenuOpen(false)}>
+            <Link href="/dashboard" className={`block py-2 ${navLink("/dashboard")}`} onClick={() => setMenuOpen(false)}>
               <GraduationCap className="w-4 h-4 inline mr-2" />{t("home")}
             </Link>
-            <Link href="/courses" className="block py-2 text-gray-600 dark:text-gray-300" onClick={() => setMenuOpen(false)}>
+            <Link href="/courses" className={`block py-2 ${navLink("/courses")}`} onClick={() => setMenuOpen(false)}>
               <BookOpen className="w-4 h-4 inline mr-2" />{t("courses")}
             </Link>
-            <Link href="/quiz" className="block py-2 text-gray-600 dark:text-gray-300" onClick={() => setMenuOpen(false)}>
+            <Link href="/quiz" className={`block py-2 ${navLink("/quiz")}`} onClick={() => setMenuOpen(false)}>
               <BrainCircuit className="w-4 h-4 inline mr-2" />{t("quiz")}
             </Link>
-            <Link href="/leaderboard" className="block py-2 text-gray-600 dark:text-gray-300" onClick={() => setMenuOpen(false)}>
+            <Link href="/leaderboard" className={`block py-2 ${navLink("/leaderboard")}`} onClick={() => setMenuOpen(false)}>
               <Trophy className="w-4 h-4 inline mr-2" />{t("leaderboard")}
             </Link>
-            <Link href="/analytics" className="block py-2 text-gray-600 dark:text-gray-300" onClick={() => setMenuOpen(false)}>
+            <Link href="/analytics" className={`block py-2 ${navLink("/analytics")}`} onClick={() => setMenuOpen(false)}>
               <BarChart3 className="w-4 h-4 inline mr-2" />{t("analytics")}
             </Link>
             {(session.user as { role?: string })?.role === "ADMIN" && (
-              <Link href="/admin" className="block py-2 text-gray-600 dark:text-gray-300" onClick={() => setMenuOpen(false)}>
+              <Link href="/admin" className={`block py-2 ${navLink("/admin")}`} onClick={() => setMenuOpen(false)}>
                 <Shield className="w-4 h-4 inline mr-2" />{t("admin")}
               </Link>
             )}

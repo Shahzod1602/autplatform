@@ -103,22 +103,44 @@ export default function DashboardPage() {
               <Link
                 key={enrollment.id}
                 href={`/courses/${enrollment.course.id}`}
-                className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 p-6 hover:shadow-md transition"
+                className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 hover:shadow-md transition overflow-hidden group"
               >
-                <div className="flex items-center gap-3 mb-3">
-                  <div
-                    className="w-10 h-10 rounded-lg flex items-center justify-center"
-                    style={{ backgroundColor: enrollment.course.color + "20" }}
-                  >
-                    <BookOpen className="w-5 h-5" style={{ color: enrollment.course.color }} />
+                {/* Colored accent bar */}
+                <div
+                  className="h-1.5 w-full"
+                  style={{ backgroundColor: enrollment.course.color }}
+                />
+                <div className="p-6">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div
+                      className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                      style={{ backgroundColor: enrollment.course.color + "20" }}
+                    >
+                      <BookOpen className="w-5 h-5" style={{ color: enrollment.course.color }} />
+                    </div>
+                    <h3 className="font-semibold text-gray-900 dark:text-white leading-snug">{enrollment.course.name}</h3>
                   </div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white">{enrollment.course.name}</h3>
-                </div>
-                {enrollment.course.description && (
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-3 line-clamp-2">{enrollment.course.description}</p>
-                )}
-                <div className="text-xs text-gray-400 dark:text-gray-500">
-                  {enrollment.course._count.materials} {t("materials")}
+                  {enrollment.course.description && (
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 line-clamp-2">{enrollment.course.description}</p>
+                  )}
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between text-xs text-gray-400 dark:text-gray-500">
+                      <span>{t("materials")}</span>
+                      <span className="font-medium" style={{ color: enrollment.course.color }}>
+                        {enrollment.course._count.materials}
+                      </span>
+                    </div>
+                    <div className="w-full bg-gray-100 dark:bg-slate-700 rounded-full h-1.5 overflow-hidden">
+                      <div
+                        className="h-1.5 rounded-full transition-all"
+                        style={{
+                          backgroundColor: enrollment.course.color,
+                          width: `${Math.min(100, (enrollment.course._count.materials / 20) * 100)}%`,
+                          minWidth: enrollment.course._count.materials > 0 ? "8%" : "0%",
+                        }}
+                      />
+                    </div>
+                  </div>
                 </div>
               </Link>
             ))}
