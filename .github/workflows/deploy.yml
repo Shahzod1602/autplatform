@@ -1,4 +1,4 @@
-name: Deploy to Production
+name: Deploy to Server
 
 on:
   push:
@@ -11,23 +11,15 @@ jobs:
 
     steps:
       - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            cd ~/examplatform
-
-            # Write .env.production from GitHub Secret
-            echo "${{ secrets.ENV_PRODUCTION }}" > .env.production
-
-            # Pull latest code
+            cd ${{ secrets.SERVER_PATH }}
             git pull origin main
-
-            # Build and deploy
-            docker compose build
+            docker compose down
+            docker compose build --no-cache
             docker compose up -d
-
-            # Clean up old images
             docker image prune -f
