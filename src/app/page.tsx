@@ -39,7 +39,7 @@ export default function Home() {
             <div className="flex-1 text-center lg:text-left">
               <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 text-sm mb-6">
                 <TrendingUp className="w-4 h-4 text-blue-200" />
-                <span className="text-blue-100">{t("heroTag") || "AI-powered learning platform"}</span>
+                <span className="text-blue-100">AI-powered learning platform</span>
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
                 {t("heroTitle1")}<br />
