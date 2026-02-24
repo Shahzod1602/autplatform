@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Trophy } from "lucide-react";
@@ -16,42 +16,64 @@ interface LeaderboardEntry {
   isCurrentUser: boolean;
 }
 
-function PodiumBlock({ entry, rank }: { entry: LeaderboardEntry; rank: 1 | 2 | 3 }) {
-  const medal = rank === 1 ? "🥇" : rank === 2 ? "🥈" : "🥉";
-  const label = rank === 1 ? "1st" : rank === 2 ? "2nd" : "3rd";
+const podiumStyles = {
+  1: {
+    gradient: "linear-gradient(to bottom, #facc15, #eab308)",
+    borderColor: "#facc15",
+    ringColor: "#facc15",
+    height: 112,
+    order: 2,
+    medal: "🥇",
+    label: "1st",
+  },
+  2: {
+    gradient: "linear-gradient(to bottom, #d1d5db, #9ca3af)",
+    borderColor: "#d1d5db",
+    ringColor: "#d1d5db",
+    height: 80,
+    order: 1,
+    medal: "🥈",
+    label: "2nd",
+  },
+  3: {
+    gradient: "linear-gradient(to bottom, #fb923c, #f97316)",
+    borderColor: "#fb923c",
+    ringColor: "#fb923c",
+    height: 56,
+    order: 3,
+    medal: "🥉",
+    label: "3rd",
+  },
+} as const;
 
-  const ringClass =
-    rank === 1 ? "ring-yellow-400" : rank === 2 ? "ring-gray-300" : "ring-orange-400";
-  const blockBg =
-    rank === 1
-      ? "bg-gradient-to-b from-yellow-400 to-yellow-500 border-t-2 border-yellow-400"
-      : rank === 2
-      ? "bg-gradient-to-b from-gray-300 to-gray-400 border-t-2 border-gray-300"
-      : "bg-gradient-to-b from-orange-400 to-orange-500 border-t-2 border-orange-400";
-  const blockHeight = rank === 1 ? "h-28" : rank === 2 ? "h-20" : "h-14";
-  const orderClass = rank === 1 ? "order-2" : rank === 2 ? "order-1" : "order-3";
+function PodiumBlock({ entry, rank }: { entry: LeaderboardEntry; rank: 1 | 2 | 3 }) {
+  const s = podiumStyles[rank];
 
   return (
-    <div className={`flex flex-col items-center ${orderClass}`}>
+    <div className="flex flex-col items-center" style={{ order: s.order }}>
       <div className="flex flex-col items-center mb-2">
         <div
-          className={`w-14 h-14 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center text-2xl font-bold ring-4 ${ringClass} shadow-lg mb-1 ${entry.isCurrentUser ? "ring-offset-2" : ""}`}
+          className={`w-14 h-14 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center text-2xl font-bold ring-4 shadow-lg mb-1 ${entry.isCurrentUser ? "ring-offset-2" : ""}`}
+          style={{ "--tw-ring-color": s.ringColor } as React.CSSProperties}
         >
           {entry.name.charAt(0).toUpperCase()}
         </div>
-        <p
-          className={`text-sm font-semibold text-center max-w-[90px] truncate ${
-            entry.isCurrentUser ? "text-blue-600 dark:text-blue-400" : "text-gray-800 dark:text-white"
-          }`}
-        >
+        <p className={`text-sm font-semibold text-center max-w-[90px] truncate ${entry.isCurrentUser ? "text-blue-600 dark:text-blue-400" : "text-gray-800 dark:text-white"}`}>
           {entry.name}
           {entry.isCurrentUser && <span className="block text-xs text-blue-400">(you)</span>}
         </p>
         <p className="text-xs text-gray-500 dark:text-gray-400">{entry.avgScore}% avg</p>
       </div>
-      <div className={`w-24 ${blockHeight} ${blockBg} rounded-t-xl flex flex-col items-center justify-center shadow-md`}>
-        <span className="text-2xl">{medal}</span>
-        <span className="text-xs font-bold text-white/90">{label}</span>
+      <div
+        className="w-24 rounded-t-xl flex flex-col items-center justify-center shadow-md"
+        style={{
+          height: s.height,
+          background: s.gradient,
+          borderTop: `2px solid ${s.borderColor}`,
+        }}
+      >
+        <span className="text-2xl">{s.medal}</span>
+        <span className="text-xs font-bold text-white/90">{s.label}</span>
       </div>
     </div>
   );

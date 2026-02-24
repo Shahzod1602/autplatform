@@ -139,15 +139,15 @@ export default function Home() {
               className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 hover:shadow-md hover:-translate-y-1 transition-all duration-200"
             >
               <div
-                className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 shadow-md ${
-                  i === 0
-                    ? "bg-gradient-to-br from-blue-500 to-cyan-500"
-                    : i === 1
-                    ? "bg-gradient-to-br from-purple-500 to-pink-500"
-                    : i === 2
-                    ? "bg-gradient-to-br from-green-500 to-emerald-500"
-                    : "bg-gradient-to-br from-orange-500 to-red-500"
-                }`}
+                className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 shadow-md"
+                style={{
+                  background: [
+                    "linear-gradient(to bottom right, #3b82f6, #06b6d4)",
+                    "linear-gradient(to bottom right, #a855f7, #ec4899)",
+                    "linear-gradient(to bottom right, #22c55e, #10b981)",
+                    "linear-gradient(to bottom right, #f97316, #ef4444)",
+                  ][i],
+                }}
               >
                 <feature.icon className="w-6 h-6 text-white" />
               </div>
