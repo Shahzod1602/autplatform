@@ -22,6 +22,7 @@ model User {
   enrollments  CourseEnrollment[]
   quizzes      Quiz[]
   quizAttempts QuizAttempt[]
+  gpaEntries   GpaEntry[]
 }
 
 model Course {
@@ -138,4 +139,16 @@ model OpenQuestion {
   modelAnswer String
   sortOrder   Int    @default(0)
   quiz        Quiz   @relation(fields: [quizId], references: [id], onDelete: Cascade)
+}
+
+model GpaEntry {
+  id         String   @id @default(cuid())
+  userId     String
+  courseName String
+  credits    Float
+  grade      String
+  semester   String   @default("Current")
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

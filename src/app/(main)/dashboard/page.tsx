@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { BookOpen, ArrowRight, GraduationCap } from "lucide-react";
 import { useT } from "@/lib/useLocale";
+import GpaCalculator from "@/components/GpaCalculator";
 
 interface EnrolledCourse {
   id: string;
@@ -157,6 +158,11 @@ export default function DashboardPage() {
             </Link>
           </div>
         )}
+      </div>
+
+      {/* GPA Calculator */}
+      <div className="mb-8">
+        <GpaCalculator />
       </div>
     </div>
   );
