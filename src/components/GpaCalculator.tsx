@@ -131,43 +131,46 @@ export default function GpaCalculator() {
   if (loading) return null;
 
   return (
-    <div className="rounded-xl border border-[#d4d4d4] bg-[#efefef] p-4 md:p-8 text-[#1f1f1f]">
-      <p className="text-[13px] md:text-[18px] text-[#2d5f95]">home / other / gpa calculator</p>
-
-      <h2 className="mt-2 text-[42px] leading-none md:text-[56px] font-bold text-[#173a70]">GPA Calculator</h2>
-      <p className="mt-4 max-w-[1080px] text-[24px] leading-[1.08] md:text-[44px]">
-        Use this calculator to calculate grade point average (GPA) and generate a GPA report.
-      </p>
-
-      <div className="mt-5 max-w-[980px] bg-[#446b9d] px-4 py-2 text-center text-white text-[14px] md:text-[40px]">
-        Modify the values and click the Calculate button to use
+    <div className="rounded-xl border border-gray-200 bg-white p-4 text-gray-900 shadow-sm dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 md:p-5">
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div>
+          <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-slate-400">Academic Tools</p>
+          <h2 className="mt-1 text-lg font-semibold md:text-xl">GPA Calculator</h2>
+          <p className="mt-1 text-sm text-gray-600 dark:text-slate-300">
+            Course baholaringizni kiriting va joriy GPA natijasini ko‘ring.
+          </p>
+        </div>
+        <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 dark:bg-blue-500/20 dark:text-blue-200">
+          4.3 scale
+        </span>
       </div>
 
-      <div className="mt-2 max-w-[980px] border border-[#c8c8c8] bg-[#e5e5e5] p-3 md:p-6">
-        <div className="mb-2 grid grid-cols-12 gap-2 md:gap-3 text-[15px] md:text-[40px] font-semibold">
-          <div className="col-span-6">Course (optional)</div>
-          <div className="col-span-3">Credits</div>
-          <div className="col-span-3">Grade</div>
-        </div>
+      <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-slate-700 dark:bg-slate-900/50 md:p-4">
+        <div className="overflow-x-auto">
+          <div className="mb-2 min-w-[620px] grid grid-cols-12 gap-2 text-xs font-semibold text-gray-600 dark:text-slate-300 md:text-sm">
+            <div className="col-span-6">Course</div>
+            <div className="col-span-3">Credits</div>
+            <div className="col-span-3">Grade</div>
+          </div>
 
-        <div className="space-y-3">
+          <div className="space-y-2 min-w-[620px]">
           {entries.map((entry) => (
-            <div key={entry.id} className="grid grid-cols-12 gap-2 md:gap-3 items-center">
+            <div key={entry.id} className="grid grid-cols-12 gap-2 items-center">
               <input
                 value={entry.courseName}
                 readOnly
-                className="col-span-6 h-11 md:h-[62px] rounded border-2 border-[#476ea0] bg-white px-2 md:px-3 text-base md:text-[34px]"
+                className="col-span-6 h-10 rounded-md border border-gray-300 bg-white px-3 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
               />
               <input
                 value={entry.credits}
                 readOnly
-                className="col-span-3 h-11 md:h-[62px] rounded border-2 border-[#476ea0] bg-white px-2 md:px-3 text-base md:text-[34px]"
+                className="col-span-3 h-10 rounded-md border border-gray-300 bg-white px-3 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
               />
               <div className="col-span-3 flex items-center gap-2">
                 <select
                   value={entry.grade}
                   disabled
-                  className="h-11 md:h-[62px] w-full rounded border-2 border-[#476ea0] bg-white px-2 md:px-3 text-base md:text-[34px]"
+                  className="h-10 w-full rounded-md border border-gray-300 bg-white px-3 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
                 >
                   {Object.keys(GRADE_POINTS).map((g) => (
                     <option key={g} value={g}>
@@ -177,21 +180,21 @@ export default function GpaCalculator() {
                 </select>
                 <button
                   onClick={() => deleteEntry(entry.id)}
-                  className="h-11 w-11 md:h-[62px] md:w-[62px] shrink-0 rounded border border-gray-300 bg-white text-gray-500 hover:text-red-600"
+                  className="h-10 w-10 shrink-0 rounded-md border border-gray-300 bg-white text-gray-500 transition hover:text-red-600 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300"
                   aria-label="Delete course"
                 >
-                  <Trash2 className="mx-auto h-5 w-5 md:h-6 md:w-6" />
+                  <Trash2 className="mx-auto h-5 w-5" />
                 </button>
               </div>
             </div>
           ))}
 
-          <div className="grid grid-cols-12 gap-2 md:gap-3 items-center">
+          <div className="grid grid-cols-12 gap-2 items-center">
             <input
-              placeholder="Data structure"
+              placeholder="Data Structures"
               value={newCourse.courseName}
               onChange={(e) => setNewCourse((prev) => ({ ...prev, courseName: e.target.value }))}
-              className="col-span-6 h-11 md:h-[62px] rounded border-2 border-[#476ea0] bg-white px-2 md:px-3 text-base md:text-[34px]"
+              className="col-span-6 h-10 rounded-md border border-gray-300 bg-white px-3 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
             />
             <input
               type="number"
@@ -199,12 +202,12 @@ export default function GpaCalculator() {
               max="30"
               value={newCourse.credits}
               onChange={(e) => setNewCourse((prev) => ({ ...prev, credits: e.target.value }))}
-              className="col-span-3 h-11 md:h-[62px] rounded border-2 border-[#476ea0] bg-white px-2 md:px-3 text-base md:text-[34px]"
+              className="col-span-3 h-10 rounded-md border border-gray-300 bg-white px-3 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
             />
             <select
               value={newCourse.grade}
               onChange={(e) => setNewCourse((prev) => ({ ...prev, grade: e.target.value }))}
-              className="col-span-3 h-11 md:h-[62px] rounded border-2 border-[#476ea0] bg-white px-2 md:px-3 text-base md:text-[34px]"
+              className="col-span-3 h-10 rounded-md border border-gray-300 bg-white px-3 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
             >
               {Object.keys(GRADE_POINTS).map((g) => (
                 <option key={g} value={g}>
@@ -213,118 +216,110 @@ export default function GpaCalculator() {
               ))}
             </select>
           </div>
-
-          <button
-            onClick={addEntry}
-            disabled={saving || !newCourse.courseName.trim()}
-            className="text-[14px] md:text-[36px] text-[#2f6094] underline disabled:text-gray-400"
-          >
-            + add more courses
-          </button>
+          </div>
         </div>
 
-        <div className="mt-5 flex flex-wrap items-center gap-2 md:gap-3">
+        <div className="mt-3 flex flex-wrap items-center gap-2">
           <button
             onClick={addEntry}
             disabled={saving || !newCourse.courseName.trim()}
-            className="h-11 md:h-[68px] rounded bg-[#5b8634] px-5 md:px-10 text-base md:text-[36px] font-bold text-white disabled:opacity-60"
+            className="h-10 rounded-md bg-blue-600 px-4 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {saving ? "Saving..." : "Calculate"}
+            {saving ? "Saving..." : "Add Course"}
           </button>
           <button
             onClick={() => setShowGpaResult(true)}
-            className="h-11 md:h-[68px] rounded bg-[#5b8634] px-5 md:px-10 text-base md:text-[36px] font-bold text-white"
+            className="h-10 rounded-md bg-emerald-600 px-4 text-sm font-medium text-white transition hover:bg-emerald-700"
           >
-            Recalculate
+            Calculate GPA
           </button>
           <button
             onClick={() => {
               setShowGpaResult(false);
               setPlannerResult(null);
             }}
-            className="h-11 md:h-[68px] rounded bg-[#b8b8b8] px-5 md:px-10 text-base md:text-[36px] font-bold text-white"
+            className="h-10 rounded-md border border-gray-300 bg-white px-4 text-sm font-medium text-gray-700 transition hover:bg-gray-100 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700"
           >
             Clear
           </button>
         </div>
 
         {showGpaResult && (
-          <div className="mt-6 rounded border border-[#476ea0] bg-white p-4 text-base md:text-[30px]">
-            <div className="font-semibold text-[#123d74]">Current GPA: {gpa.toFixed(2)}</div>
-            <div className="text-gray-700">Total Credits: {totalCredits}</div>
+          <div className="mt-4 grid gap-2 rounded-md border border-blue-200 bg-blue-50 p-3 text-sm dark:border-blue-500/40 dark:bg-blue-500/10">
+            <div className="font-semibold text-blue-900 dark:text-blue-200">Current GPA: {gpa.toFixed(2)}</div>
+            <div className="text-blue-800 dark:text-blue-100">Total Credits: {totalCredits}</div>
           </div>
         )}
       </div>
 
-      <div className="mt-14 max-w-[980px]">
-        <h3 className="text-[30px] leading-none md:text-[56px] font-bold text-[#173a70]">GPA Planning Calculator</h3>
-        <p className="mt-3 text-[18px] leading-[1.08] md:text-[44px]">
-          The calculator can be used to determine the minimum GPA required in future courses to raise GPA to desired
-          level or maintain the GPA above a certain level.
+      <div className="mt-4 rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-slate-700 dark:bg-slate-900/50 md:p-4">
+        <h3 className="text-base font-semibold md:text-lg">GPA Planning</h3>
+        <p className="mt-1 text-sm text-gray-600 dark:text-slate-300">
+          Kelgusi kreditlar bo‘yicha kerakli o‘rtacha GPA ni hisoblang.
         </p>
 
-        <div className="mt-4 border border-[#c8c8c8] bg-[#e5e5e5] p-4 md:p-6">
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 items-center gap-4">
-              <label className="text-[16px] md:text-[40px]">Current GPA</label>
+        <div className="mt-3">
+          <div className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-2 md:gap-4">
+              <label className="text-sm text-gray-600 dark:text-slate-300">Current GPA</label>
               <input
                 value={planner.currentGpa}
                 onChange={(e) => setPlanner((prev) => ({ ...prev, currentGpa: e.target.value }))}
-                className="h-11 md:h-[70px] rounded border-2 border-[#476ea0] bg-white px-2 md:px-3 text-base md:text-[34px]"
+                className="h-10 rounded-md border border-gray-300 bg-white px-3 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
               />
             </div>
-            <div className="grid grid-cols-2 items-center gap-4">
-              <label className="text-[16px] md:text-[40px]">Target GPA</label>
+            <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-2 md:gap-4">
+              <label className="text-sm text-gray-600 dark:text-slate-300">Target GPA</label>
               <input
                 value={planner.targetGpa}
                 onChange={(e) => setPlanner((prev) => ({ ...prev, targetGpa: e.target.value }))}
-                className="h-11 md:h-[70px] rounded border-2 border-[#476ea0] bg-white px-2 md:px-3 text-base md:text-[34px]"
+                className="h-10 rounded-md border border-gray-300 bg-white px-3 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
               />
             </div>
-            <div className="grid grid-cols-2 items-center gap-4">
-              <label className="text-[16px] md:text-[40px]">Current Credits</label>
+            <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-2 md:gap-4">
+              <label className="text-sm text-gray-600 dark:text-slate-300">Current Credits</label>
               <input
                 value={planner.currentCredits}
                 onChange={(e) => setPlanner((prev) => ({ ...prev, currentCredits: e.target.value }))}
-                className="h-11 md:h-[70px] rounded border-2 border-[#476ea0] bg-white px-2 md:px-3 text-base md:text-[34px]"
+                className="h-10 rounded-md border border-gray-300 bg-white px-3 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
               />
             </div>
-            <div className="grid grid-cols-2 items-center gap-4">
-              <label className="text-[16px] md:text-[40px]">Additional Credits</label>
+            <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-2 md:gap-4">
+              <label className="text-sm text-gray-600 dark:text-slate-300">Additional Credits</label>
               <input
                 value={planner.additionalCredits}
                 onChange={(e) => setPlanner((prev) => ({ ...prev, additionalCredits: e.target.value }))}
-                className="h-11 md:h-[70px] rounded border-2 border-[#476ea0] bg-white px-2 md:px-3 text-base md:text-[34px]"
+                className="h-10 rounded-md border border-gray-300 bg-white px-3 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
               />
             </div>
           </div>
 
-          <div className="mt-5 flex gap-3">
+          <div className="mt-5 flex gap-3 flex-wrap">
             <button
               onClick={calculatePlanningGpa}
-              className="h-11 md:h-[68px] rounded bg-[#5b8634] px-5 md:px-10 text-base md:text-[36px] font-bold text-white"
+              className="h-10 rounded-md bg-blue-600 px-4 text-sm font-medium text-white transition hover:bg-blue-700"
             >
               Calculate
             </button>
             <button
               onClick={() => setPlannerResult(null)}
-              className="h-11 md:h-[68px] rounded bg-[#b8b8b8] px-5 md:px-10 text-base md:text-[36px] font-bold text-white"
+              className="h-10 rounded-md border border-gray-300 bg-white px-4 text-sm font-medium text-gray-700 transition hover:bg-gray-100 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700"
             >
               Clear
             </button>
           </div>
 
-          {plannerResult && <div className="mt-4 rounded bg-white p-3 text-sm md:text-[28px] text-gray-800">{plannerResult}</div>}
-        </div>
-
-        <div className="mt-6 border border-[#d5d5d5] bg-[#dfdfdf] p-3 md:p-4">
-          <div className="inline-block bg-[#40699d] px-3 py-1 text-white text-[14px] md:text-[32px]">Grade Calculator</div>
+          {plannerResult && (
+            <div className="mt-4 rounded-md border border-gray-200 bg-white p-3 text-sm text-gray-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200">
+              {plannerResult}
+            </div>
+          )}
         </div>
       </div>
 
-      <div className="mt-12 max-w-[980px] rounded border border-[#d0d0d0] bg-white p-4">
-        <h4 className="text-[18px] md:text-[40px] font-semibold text-[#123d74]">Grade Points (4.3 Scale)</h4>
-        <ul className="mt-3 space-y-1 text-[16px] md:text-[38px] leading-[1.05]">
+      <div className="mt-4 rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-slate-700 dark:bg-slate-900/50 md:p-4">
+        <h4 className="text-sm font-semibold text-gray-700 dark:text-slate-200">Grade Points (4.3 Scale)</h4>
+        <ul className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-gray-600 dark:text-slate-300 md:grid-cols-4 md:text-sm">
           {Object.entries(GRADE_POINTS).map(([grade, points]) => (
             <li key={grade}>
               {grade} = {points.toFixed(1)} grade point{points === 1 ? "" : "s"}
