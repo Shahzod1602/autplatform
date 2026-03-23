@@ -1,36 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Trash2, Plus, GraduationCap, TrendingUp } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Trash2 } from "lucide-react";
 
 const GRADE_POINTS: Record<string, number> = {
-  "A+": 4.33,
-  "A":  4.00,
-  "A-": 3.67,
-  "B+": 3.33,
-  "B":  3.00,
-  "B-": 2.67,
-  "C+": 2.33,
-  "C":  2.00,
-  "C-": 1.67,
-  "D+": 1.33,
-  "D":  1.00,
-  "F":  0.00,
-};
-
-const GRADE_COLORS: Record<string, string> = {
-  "A+": "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-  "A":  "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-  "A-": "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
-  "B+": "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-  "B":  "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-  "B-": "bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400",
-  "C+": "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
-  "C":  "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
-  "C-": "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
-  "D+": "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
-  "D":  "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
-  "F":  "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400",
+  "A+": 4.3,
+  "A": 4.0,
+  "A-": 3.7,
+  "B+": 3.3,
+  "B": 3.0,
+  "B-": 2.7,
+  "C+": 2.3,
+  "C": 2.0,
+  "C-": 1.7,
+  "D+": 1.3,
+  "D": 1.0,
+  "D-": 0.7,
+  "F": 0.0,
 };
 
 interface GpaEntry {
@@ -47,39 +33,66 @@ function calcGpa(entries: GpaEntry[]): number {
   return totalCredits === 0 ? 0 : totalPoints / totalCredits;
 }
 
-function gpaColor(gpa: number): string {
-  if (gpa >= 3.7) return "text-emerald-600 dark:text-emerald-400";
-  if (gpa >= 3.0) return "text-blue-600 dark:text-blue-400";
-  if (gpa >= 2.0) return "text-yellow-600 dark:text-yellow-400";
-  return "text-red-600 dark:text-red-400";
+function clampNumber(value: string, fallback: number): number {
+  const parsed = Number(value);
+  if (Number.isNaN(parsed)) return fallback;
+  return parsed;
 }
 
 export default function GpaCalculator() {
   const [entries, setEntries] = useState<GpaEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ courseName: "", credits: "3", grade: "A", semester: "Current" });
   const [saving, setSaving] = useState(false);
+  const [showGpaResult, setShowGpaResult] = useState(false);
+
+  const [newCourse, setNewCourse] = useState({
+    courseName: "",
+    credits: "6",
+    grade: "A",
+  });
+
+  const [planner, setPlanner] = useState({
+    currentGpa: "2.8",
+    targetGpa: "3",
+    currentCredits: "25",
+    additionalCredits: "15",
+  });
+  const [plannerResult, setPlannerResult] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/gpa")
       .then((r) => r.json())
-      .then((data) => { setEntries(data); setLoading(false); })
+      .then((data) => {
+        setEntries(data);
+        setLoading(false);
+      })
       .catch(() => setLoading(false));
   }, []);
 
+  const gpa = useMemo(() => calcGpa(entries), [entries]);
+  const totalCredits = useMemo(() => entries.reduce((s, e) => s + e.credits, 0), [entries]);
+
   async function addEntry() {
-    if (!form.courseName.trim()) return;
+    if (!newCourse.courseName.trim()) return;
+
     setSaving(true);
     const res = await fetch("/api/gpa", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
+      body: JSON.stringify({
+        courseName: newCourse.courseName,
+        credits: newCourse.credits,
+        grade: newCourse.grade,
+        semester: "Current",
+      }),
     });
-    const data = await res.json();
-    setEntries((prev) => [...prev, data]);
-    setForm({ courseName: "", credits: "3", grade: "A", semester: form.semester });
-    setShowForm(false);
+
+    if (res.ok) {
+      const data = await res.json();
+      setEntries((prev) => [...prev, data]);
+      setNewCourse({ courseName: "", credits: "6", grade: "A" });
+    }
+
     setSaving(false);
   }
 
@@ -88,166 +101,237 @@ export default function GpaCalculator() {
     setEntries((prev) => prev.filter((e) => e.id !== id));
   }
 
-  const semesters = [...new Set(entries.map((e) => e.semester))];
-  const gpa = calcGpa(entries);
-  const totalCredits = entries.reduce((s, e) => s + e.credits, 0);
+  function calculatePlanningGpa() {
+    const currentGpa = clampNumber(planner.currentGpa, 0);
+    const targetGpa = clampNumber(planner.targetGpa, 0);
+    const currentCredits = clampNumber(planner.currentCredits, 0);
+    const additionalCredits = clampNumber(planner.additionalCredits, 0);
+
+    if (currentCredits < 0 || additionalCredits <= 0) {
+      setPlannerResult("Credits qiymati noto'g'ri. Additional credits 0 dan katta bo'lishi kerak.");
+      return;
+    }
+
+    const requiredPoints = targetGpa * (currentCredits + additionalCredits) - currentGpa * currentCredits;
+    const requiredGpa = requiredPoints / additionalCredits;
+
+    if (requiredGpa <= 0) {
+      setPlannerResult(`Maqsadga yetish uchun kamida 0.00 GPA kifoya (allaqachon ${targetGpa.toFixed(2)} yoki undan yuqori).`);
+      return;
+    }
+
+    if (requiredGpa > 4.3) {
+      setPlannerResult(`Imkonsiz: kerakli GPA ${requiredGpa.toFixed(2)} (maksimal 4.30 dan yuqori).`);
+      return;
+    }
+
+    setPlannerResult(`Kelgusi ${additionalCredits} kredit uchun kerakli o'rtacha GPA: ${requiredGpa.toFixed(2)}`);
+  }
 
   if (loading) return null;
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
-      {/* Header */}
-      <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-slate-700">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center">
-            <GraduationCap className="w-5 h-5 text-violet-600 dark:text-violet-400" />
-          </div>
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">GPA Calculator</h2>
-            <p className="text-xs text-gray-500 dark:text-gray-400">ASU 4.33 Scale</p>
-          </div>
+    <div className="rounded-xl border border-[#d4d4d4] bg-[#efefef] p-4 md:p-8 text-[#1f1f1f]">
+      <p className="text-[13px] md:text-[18px] text-[#2d5f95]">home / other / gpa calculator</p>
+
+      <h2 className="mt-2 text-[42px] leading-none md:text-[56px] font-bold text-[#173a70]">GPA Calculator</h2>
+      <p className="mt-4 max-w-[1080px] text-[24px] leading-[1.08] md:text-[44px]">
+        Use this calculator to calculate grade point average (GPA) and generate a GPA report.
+      </p>
+
+      <div className="mt-5 max-w-[980px] bg-[#446b9d] px-4 py-2 text-center text-white text-[14px] md:text-[40px]">
+        Modify the values and click the Calculate button to use
+      </div>
+
+      <div className="mt-2 max-w-[980px] border border-[#c8c8c8] bg-[#e5e5e5] p-3 md:p-6">
+        <div className="mb-2 grid grid-cols-12 gap-2 md:gap-3 text-[15px] md:text-[40px] font-semibold">
+          <div className="col-span-6">Course (optional)</div>
+          <div className="col-span-3">Credits</div>
+          <div className="col-span-3">Grade</div>
         </div>
 
-        {/* GPA Badge */}
-        {entries.length > 0 && (
-          <div className="text-right">
-            <div className={`text-3xl font-bold ${gpaColor(gpa)}`}>{gpa.toFixed(2)}</div>
-            <div className="text-xs text-gray-400 dark:text-gray-500">{totalCredits} credits</div>
+        <div className="space-y-3">
+          {entries.map((entry) => (
+            <div key={entry.id} className="grid grid-cols-12 gap-2 md:gap-3 items-center">
+              <input
+                value={entry.courseName}
+                readOnly
+                className="col-span-6 h-11 md:h-[62px] rounded border-2 border-[#476ea0] bg-white px-2 md:px-3 text-base md:text-[34px]"
+              />
+              <input
+                value={entry.credits}
+                readOnly
+                className="col-span-3 h-11 md:h-[62px] rounded border-2 border-[#476ea0] bg-white px-2 md:px-3 text-base md:text-[34px]"
+              />
+              <div className="col-span-3 flex items-center gap-2">
+                <select
+                  value={entry.grade}
+                  disabled
+                  className="h-11 md:h-[62px] w-full rounded border-2 border-[#476ea0] bg-white px-2 md:px-3 text-base md:text-[34px]"
+                >
+                  {Object.keys(GRADE_POINTS).map((g) => (
+                    <option key={g} value={g}>
+                      {g}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  onClick={() => deleteEntry(entry.id)}
+                  className="h-11 w-11 md:h-[62px] md:w-[62px] shrink-0 rounded border border-gray-300 bg-white text-gray-500 hover:text-red-600"
+                  aria-label="Delete course"
+                >
+                  <Trash2 className="mx-auto h-5 w-5 md:h-6 md:w-6" />
+                </button>
+              </div>
+            </div>
+          ))}
+
+          <div className="grid grid-cols-12 gap-2 md:gap-3 items-center">
+            <input
+              placeholder="Data structure"
+              value={newCourse.courseName}
+              onChange={(e) => setNewCourse((prev) => ({ ...prev, courseName: e.target.value }))}
+              className="col-span-6 h-11 md:h-[62px] rounded border-2 border-[#476ea0] bg-white px-2 md:px-3 text-base md:text-[34px]"
+            />
+            <input
+              type="number"
+              min="1"
+              max="30"
+              value={newCourse.credits}
+              onChange={(e) => setNewCourse((prev) => ({ ...prev, credits: e.target.value }))}
+              className="col-span-3 h-11 md:h-[62px] rounded border-2 border-[#476ea0] bg-white px-2 md:px-3 text-base md:text-[34px]"
+            />
+            <select
+              value={newCourse.grade}
+              onChange={(e) => setNewCourse((prev) => ({ ...prev, grade: e.target.value }))}
+              className="col-span-3 h-11 md:h-[62px] rounded border-2 border-[#476ea0] bg-white px-2 md:px-3 text-base md:text-[34px]"
+            >
+              {Object.keys(GRADE_POINTS).map((g) => (
+                <option key={g} value={g}>
+                  {g}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <button
+            onClick={addEntry}
+            disabled={saving || !newCourse.courseName.trim()}
+            className="text-[14px] md:text-[36px] text-[#2f6094] underline disabled:text-gray-400"
+          >
+            + add more courses
+          </button>
+        </div>
+
+        <div className="mt-5 flex flex-wrap items-center gap-2 md:gap-3">
+          <button
+            onClick={addEntry}
+            disabled={saving || !newCourse.courseName.trim()}
+            className="h-11 md:h-[68px] rounded bg-[#5b8634] px-5 md:px-10 text-base md:text-[36px] font-bold text-white disabled:opacity-60"
+          >
+            {saving ? "Saving..." : "Calculate"}
+          </button>
+          <button
+            onClick={() => setShowGpaResult(true)}
+            className="h-11 md:h-[68px] rounded bg-[#5b8634] px-5 md:px-10 text-base md:text-[36px] font-bold text-white"
+          >
+            Recalculate
+          </button>
+          <button
+            onClick={() => {
+              setShowGpaResult(false);
+              setPlannerResult(null);
+            }}
+            className="h-11 md:h-[68px] rounded bg-[#b8b8b8] px-5 md:px-10 text-base md:text-[36px] font-bold text-white"
+          >
+            Clear
+          </button>
+        </div>
+
+        {showGpaResult && (
+          <div className="mt-6 rounded border border-[#476ea0] bg-white p-4 text-base md:text-[30px]">
+            <div className="font-semibold text-[#123d74]">Current GPA: {gpa.toFixed(2)}</div>
+            <div className="text-gray-700">Total Credits: {totalCredits}</div>
           </div>
         )}
       </div>
 
-      {/* Semester groups */}
-      {entries.length > 0 && (
-        <div className="p-6 space-y-6">
-          {semesters.map((sem) => {
-            const semEntries = entries.filter((e) => e.semester === sem);
-            const semGpa = calcGpa(semEntries);
-            return (
-              <div key={sem}>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{sem}</span>
-                  <div className="flex items-center gap-2">
-                    <TrendingUp className="w-3.5 h-3.5 text-gray-400" />
-                    <span className={`text-sm font-semibold ${gpaColor(semGpa)}`}>{semGpa.toFixed(2)}</span>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  {semEntries.map((entry) => (
-                    <div
-                      key={entry.id}
-                      className="flex items-center justify-between bg-gray-50 dark:bg-slate-700/50 rounded-lg px-4 py-3"
-                    >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <span className={`text-xs font-bold px-2 py-0.5 rounded-md flex-shrink-0 ${GRADE_COLORS[entry.grade] ?? ""}`}>
-                          {entry.grade}
-                        </span>
-                        <span className="text-sm text-gray-800 dark:text-gray-200 truncate">{entry.courseName}</span>
-                      </div>
-                      <div className="flex items-center gap-3 ml-2 flex-shrink-0">
-                        <span className="text-xs text-gray-400">{entry.credits} cr</span>
-                        <span className="text-xs text-gray-400">{GRADE_POINTS[entry.grade]?.toFixed(2)}</span>
-                        <button
-                          onClick={() => deleteEntry(entry.id)}
-                          className="text-gray-300 hover:text-red-500 dark:text-gray-600 dark:hover:text-red-400 transition"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+      <div className="mt-14 max-w-[980px]">
+        <h3 className="text-[30px] leading-none md:text-[56px] font-bold text-[#173a70]">GPA Planning Calculator</h3>
+        <p className="mt-3 text-[18px] leading-[1.08] md:text-[44px]">
+          The calculator can be used to determine the minimum GPA required in future courses to raise GPA to desired
+          level or maintain the GPA above a certain level.
+        </p>
 
-      {/* Empty state */}
-      {entries.length === 0 && !showForm && (
-        <div className="p-10 text-center">
-          <GraduationCap className="w-10 h-10 text-gray-200 dark:text-gray-700 mx-auto mb-3" />
-          <p className="text-sm text-gray-400 dark:text-gray-500">Hali kurslar qo&apos;shilmagan</p>
-        </div>
-      )}
-
-      {/* Add form */}
-      {showForm && (
-        <div className="p-6 border-t border-gray-100 dark:border-slate-700 space-y-3">
-          <div className="grid grid-cols-2 gap-3">
-            <div className="col-span-2">
+        <div className="mt-4 border border-[#c8c8c8] bg-[#e5e5e5] p-4 md:p-6">
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 items-center gap-4">
+              <label className="text-[16px] md:text-[40px]">Current GPA</label>
               <input
-                type="text"
-                placeholder="Kurs nomi (e.g. Calculus I)"
-                value={form.courseName}
-                onChange={(e) => setForm({ ...form, courseName: e.target.value })}
-                className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500"
+                value={planner.currentGpa}
+                onChange={(e) => setPlanner((prev) => ({ ...prev, currentGpa: e.target.value }))}
+                className="h-11 md:h-[70px] rounded border-2 border-[#476ea0] bg-white px-2 md:px-3 text-base md:text-[34px]"
               />
             </div>
-            <div>
-              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Credit soat</label>
-              <select
-                value={form.credits}
-                onChange={(e) => setForm({ ...form, credits: e.target.value })}
-                className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500"
-              >
-                {[1, 2, 3, 4, 5, 6].map((c) => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Baho</label>
-              <select
-                value={form.grade}
-                onChange={(e) => setForm({ ...form, grade: e.target.value })}
-                className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500"
-              >
-                {Object.keys(GRADE_POINTS).map((g) => (
-                  <option key={g} value={g}>{g} ({GRADE_POINTS[g].toFixed(2)})</option>
-                ))}
-              </select>
-            </div>
-            <div className="col-span-2">
-              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Semester</label>
+            <div className="grid grid-cols-2 items-center gap-4">
+              <label className="text-[16px] md:text-[40px]">Target GPA</label>
               <input
-                type="text"
-                placeholder="e.g. Fall 2025"
-                value={form.semester}
-                onChange={(e) => setForm({ ...form, semester: e.target.value })}
-                className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500"
+                value={planner.targetGpa}
+                onChange={(e) => setPlanner((prev) => ({ ...prev, targetGpa: e.target.value }))}
+                className="h-11 md:h-[70px] rounded border-2 border-[#476ea0] bg-white px-2 md:px-3 text-base md:text-[34px]"
+              />
+            </div>
+            <div className="grid grid-cols-2 items-center gap-4">
+              <label className="text-[16px] md:text-[40px]">Current Credits</label>
+              <input
+                value={planner.currentCredits}
+                onChange={(e) => setPlanner((prev) => ({ ...prev, currentCredits: e.target.value }))}
+                className="h-11 md:h-[70px] rounded border-2 border-[#476ea0] bg-white px-2 md:px-3 text-base md:text-[34px]"
+              />
+            </div>
+            <div className="grid grid-cols-2 items-center gap-4">
+              <label className="text-[16px] md:text-[40px]">Additional Credits</label>
+              <input
+                value={planner.additionalCredits}
+                onChange={(e) => setPlanner((prev) => ({ ...prev, additionalCredits: e.target.value }))}
+                className="h-11 md:h-[70px] rounded border-2 border-[#476ea0] bg-white px-2 md:px-3 text-base md:text-[34px]"
               />
             </div>
           </div>
-          <div className="flex gap-2 pt-1">
+
+          <div className="mt-5 flex gap-3">
             <button
-              onClick={addEntry}
-              disabled={saving || !form.courseName.trim()}
-              className="flex-1 bg-violet-600 hover:bg-violet-700 disabled:opacity-50 text-white text-sm font-medium py-2 rounded-lg transition"
+              onClick={calculatePlanningGpa}
+              className="h-11 md:h-[68px] rounded bg-[#5b8634] px-5 md:px-10 text-base md:text-[36px] font-bold text-white"
             >
-              {saving ? "Saqlanmoqda..." : "Qo'shish"}
+              Calculate
             </button>
             <button
-              onClick={() => setShowForm(false)}
-              className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition"
+              onClick={() => setPlannerResult(null)}
+              className="h-11 md:h-[68px] rounded bg-[#b8b8b8] px-5 md:px-10 text-base md:text-[36px] font-bold text-white"
             >
-              Bekor
+              Clear
             </button>
           </div>
-        </div>
-      )}
 
-      {/* Add button */}
-      {!showForm && (
-        <div className="px-6 pb-6 pt-2">
-          <button
-            onClick={() => setShowForm(true)}
-            className="w-full flex items-center justify-center gap-2 border-2 border-dashed border-gray-200 dark:border-slate-600 hover:border-violet-400 dark:hover:border-violet-500 text-gray-400 dark:text-gray-500 hover:text-violet-600 dark:hover:text-violet-400 rounded-lg py-3 text-sm transition"
-          >
-            <Plus className="w-4 h-4" /> Kurs qo&apos;shish
-          </button>
+          {plannerResult && <div className="mt-4 rounded bg-white p-3 text-sm md:text-[28px] text-gray-800">{plannerResult}</div>}
         </div>
-      )}
+
+        <div className="mt-6 border border-[#d5d5d5] bg-[#dfdfdf] p-3 md:p-4">
+          <div className="inline-block bg-[#40699d] px-3 py-1 text-white text-[14px] md:text-[32px]">Grade Calculator</div>
+        </div>
+      </div>
+
+      <div className="mt-12 max-w-[980px] rounded border border-[#d0d0d0] bg-white p-4">
+        <h4 className="text-[18px] md:text-[40px] font-semibold text-[#123d74]">Grade Points (4.3 Scale)</h4>
+        <ul className="mt-3 space-y-1 text-[16px] md:text-[38px] leading-[1.05]">
+          {Object.entries(GRADE_POINTS).map(([grade, points]) => (
+            <li key={grade}>
+              {grade} = {points.toFixed(1)} grade point{points === 1 ? "" : "s"}
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }
